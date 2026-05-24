@@ -536,13 +536,13 @@ def _svg_parameter_coverage(
     total = sum(c for _, c in items) or 1
     max_v = max((c for _, c in items), default=1)
 
-    width, height = 980, 420
-    pad_left, pad_right, pad_top, pad_bottom = 230, 40, 70, 50
+    width, height = 1040, 460
+    pad_left, pad_right, pad_top, pad_bottom = 180, 120, 94, 58
     plot_w = width - pad_left - pad_right
     plot_h = height - pad_top - pad_bottom
 
     bar_h = 22
-    gap = 10
+    gap = 12
     needed_h = len(items) * (bar_h + gap) - gap
     if needed_h > plot_h:
         height = pad_top + needed_h + pad_bottom
@@ -556,7 +556,14 @@ def _svg_parameter_coverage(
     tick_step = max(1, int(max_v / (tick_count - 1)))
     tick_max = tick_step * (tick_count - 1)
 
-    navy = "#0B1F3B"
+    bg = "#F7F5EF"
+    panel = "#FFFFFF"
+    text_dark = "#1F2933"
+    text_muted = "#607080"
+    grid = "#D7DDE3"
+    bar_fill = "#0F4C5C"
+    bar_fill_soft = "#2A6F97"
+    accent = "#C96E4B"
 
     dictionary = {
         "pm25": "PM2.5: fine particles ≤2.5 µm",
@@ -600,36 +607,44 @@ def _svg_parameter_coverage(
 
     parts: list[str] = []
     parts.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">')
-    parts.append(f'<rect x="0" y="0" width="{width}" height="{height}" fill="white"/>')
+    parts.append(f'<rect x="0" y="0" width="{width}" height="{height}" fill="{bg}"/>')
+    parts.append(
+        f'<rect x="16" y="16" width="{width - 32}" height="{height - 32}" rx="18" ry="18" '
+        f'fill="{panel}" stroke="#E3E8EE" stroke-width="1"/>'
+    )
 
     parts.append(
-        f'<text x="{pad_left}" y="26" font-family="Arial, sans-serif" font-size="18">'
+        f'<text x="36" y="48" font-family="Public Sans, Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="22" font-weight="600" fill="{text_dark}">'
         f'{escape(title_suffix)} — {escape(pretty_date)}'
         f"</text>"
     )
     parts.append(
-        f'<text x="{pad_left}" y="48" font-family="Arial, sans-serif" font-size="12" fill="gray">'
-        f'Counts returned by OpenAQ / latest across the NY daily sample (top {len(items)}). Total shown: {total}.'
+        f'<text x="36" y="72" font-family="Public Sans, Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="{text_muted}">'
+        f'Counts returned by OpenAQ / latest across the NY daily sample. Top {len(items)} parameters shown.'
         f"</text>"
+    )
+    parts.append(
+        f'<text x="{width - 36}" y="47" font-family="Public Sans, Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="12" '
+        f'text-anchor="end" fill="{text_dark}">Total measurements: {total}</text>'
     )
 
     # Axes
-    parts.append(f'<line x1="{pad_left}" y1="{y0}" x2="{pad_left}" y2="{y1}" stroke="black"/>')
-    parts.append(f'<line x1="{pad_left}" y1="{y1}" x2="{pad_left + plot_w}" y2="{y1}" stroke="black"/>')
+    parts.append(f'<line x1="{pad_left}" y1="{y0}" x2="{pad_left}" y2="{y1}" stroke="#6B7A86" stroke-width="1"/>')
+    parts.append(f'<line x1="{pad_left}" y1="{y1}" x2="{pad_left + plot_w}" y2="{y1}" stroke="#6B7A86" stroke-width="1"/>')
 
     # Grid + tick labels
     for i in range(tick_count):
         v = i * tick_step
         x = pad_left + (v / tick_max) * plot_w if tick_max else pad_left
-        parts.append(f'<line x1="{x:.2f}" y1="{y0}" x2="{x:.2f}" y2="{y1}" stroke="lightgray"/>')
+        parts.append(f'<line x1="{x:.2f}" y1="{y0}" x2="{x:.2f}" y2="{y1}" stroke="{grid}" stroke-width="1"/>')
         parts.append(
-            f'<text x="{x:.2f}" y="{y1 + 18}" font-family="Arial, sans-serif" font-size="11" '
-            f'text-anchor="middle">{v}</text>'
+            f'<text x="{x:.2f}" y="{y1 + 18}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="11" '
+            f'text-anchor="middle" fill="{text_muted}">{v}</text>'
         )
 
     parts.append(
-        f'<text x="{pad_left + plot_w/2:.2f}" y="{height - 12}" font-family="Arial, sans-serif" '
-        f'font-size="12" text-anchor="middle">measurement count</text>'
+        f'<text x="{pad_left + plot_w/2:.2f}" y="{height - 18}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" '
+        f'font-size="12" text-anchor="middle" fill="{text_muted}">measurement count</text>'
     )
 
     # Bars + labels
@@ -639,13 +654,13 @@ def _svg_parameter_coverage(
         bar_w = (count / max_v) * plot_w if max_v else 0.0
 
         parts.append(
-            f'<text x="{pad_left - 10}" y="{y + bar_h - 5}" font-family="Arial, sans-serif" '
-            f'font-size="12" text-anchor="end">{escape(param)}</text>'
+            f'<text x="{pad_left - 12}" y="{y + bar_h - 5}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" '
+            f'font-size="12" text-anchor="end" fill="{text_dark}">{escape(param)}</text>'
         )
 
         parts.append(
-            f'<rect x="{pad_left}" y="{y}" width="{bar_w:.2f}" height="{bar_h}" '
-            f'fill="{navy}" stroke="black" stroke-width="0.5"/>'
+            f'<rect x="{pad_left}" y="{y}" width="{bar_w:.2f}" height="{bar_h}" rx="6" ry="6" '
+            f'fill="{bar_fill}" stroke="{bar_fill_soft}" stroke-width="0.8"/>'
         )
 
         pct = int(round((count / total) * 100))
@@ -655,13 +670,13 @@ def _svg_parameter_coverage(
         approx_text_w = 7 * len(label)
         if outside_x + approx_text_w <= max_label_x:
             parts.append(
-                f'<text x="{outside_x:.2f}" y="{y + bar_h - 5}" font-family="Arial, sans-serif" font-size="12">'
+                f'<text x="{outside_x:.2f}" y="{y + bar_h - 5}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="12" fill="{text_dark}">'
                 f"{escape(label)}</text>"
             )
         else:
             inside_x = max(pad_left + 6, pad_left + bar_w - 6)
             parts.append(
-                f'<text x="{inside_x:.2f}" y="{y + bar_h - 5}" font-family="Arial, sans-serif" font-size="12" '
+                f'<text x="{inside_x:.2f}" y="{y + bar_h - 5}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="12" '
                 f'fill="white" text-anchor="end">{escape(label)}</text>'
             )
 
@@ -669,30 +684,35 @@ def _svg_parameter_coverage(
     if legend_lines:
         line_h = 14
         title_h = 14
-        pad_box = 10
+        pad_box = 12
 
         # Size the box conservatively
-        box_w = 330
+        box_w = 308
         box_h = pad_box * 2 + title_h + len(legend_lines) * line_h
 
-        # Position bottom-right inside the plotting area
-        box_x = pad_left + plot_w - box_w - 10
-        box_y = y1 - box_h - 10
+        # Place the dictionary box inside the plot at bottom-right.
+        box_x = pad_left + plot_w - box_w - 12
+        box_y = y1 - box_h - 12
 
         # Background
         parts.append(
-            f'<rect x="{box_x:.2f}" y="{box_y:.2f}" width="{box_w}" height="{box_h}" '
-            f'fill="white" stroke="black" stroke-width="0.6"/>'
+            f'<rect x="{box_x:.2f}" y="{box_y:.2f}" width="{box_w}" height="{box_h}" rx="12" ry="12" '
+            f'fill="#FBFCFD" stroke="#D8E0E7" stroke-width="1"/>'
         )
 
         tx = box_x + pad_box
         ty = box_y + pad_box + 11
 
-        parts.append(f'<text x="{tx:.2f}" y="{ty:.2f}" font-family="Arial, sans-serif" font-size="11" fill="black">')
-        parts.append(f'<tspan x="{tx:.2f}" dy="0">Dictionary</tspan>')
-        for line in legend_lines:
-            parts.append(f'<tspan x="{tx:.2f}" dy="{line_h}">{escape(line)}</tspan>')
-        parts.append("</text>")
+        parts.append(
+            f'<text x="{tx:.2f}" y="{ty:.2f}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="11" fill="{text_dark}">'
+            f"Dictionary"
+            f"</text>"
+        )
+        for idx, line in enumerate(legend_lines, start=1):
+            parts.append(
+                f'<text x="{tx:.2f}" y="{ty + idx * line_h:.2f}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" '
+                f'font-size="11" fill="{text_dark}">{escape(line)}</text>'
+            )
 
     parts.append("</svg>")
     chart_path.write_text("\n".join(parts) + "\n", encoding="utf-8")
@@ -710,6 +730,7 @@ def _svg_map(
     primary_param: str,
     units: str,
 ) -> Path:
+    import math
     from xml.sax.saxutils import escape
 
     map_path = report_dir / "map.svg"
@@ -872,18 +893,35 @@ def _svg_map(
             lats.append(float(lat))
     min_lon, max_lon = min(lons), max(lons)
     min_lat, max_lat = min(lats), max(lats)
+    lat_ref = sum(lats) / len(lats) if lats else 0.0
+    lon_scale = math.cos(math.radians(lat_ref))
 
-    width, height = 900, 520
+    width, height = 960, 560
     pad = 20
+    header_h = 64
+    footer_h = 92
+    map_top = 94
+    map_bottom = 104
+    lon_span = (max_lon - min_lon) * lon_scale or 1.0
+    lat_span = max_lat - min_lat or 1.0
+    drawable_w = width - 2 * pad
+    drawable_h = height - map_top - map_bottom
+    scale = min(drawable_w / lon_span, drawable_h / lat_span)
+    x0 = pad + (drawable_w - lon_span * scale) / 2
+    y0 = map_top + (drawable_h - lat_span * scale) / 2
 
     def project(lon: float, lat: float) -> tuple[float, float]:
-        x = pad + (lon - min_lon) / (max_lon - min_lon) * (width - 2 * pad)
-        y = pad + (max_lat - lat) / (max_lat - min_lat) * (height - 2 * pad)
+        x = x0 + ((lon - min_lon) * lon_scale) * scale
+        y = y0 + (max_lat - lat) * scale
         return x, y
 
     parts: list[str] = []
     parts.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">')
-    parts.append(f'<rect x="0" y="0" width="{width}" height="{height}" fill="white"/>')
+    parts.append(f'<rect x="0" y="0" width="{width}" height="{height}" fill="#F7F5EF"/>')
+    parts.append(
+        f'<rect x="14" y="14" width="{width - 28}" height="{height - 28}" rx="18" ry="18" '
+        f'fill="#FFFFFF" stroke="#E4E8EE" stroke-width="1"/>'
+    )
     display_param = pretty_parameter_name(primary_param)
 
     fresh_n = sum(1 for _, _, v, stale in points if (v is not None) and (not stale))
@@ -891,16 +929,19 @@ def _svg_map(
     missing_n = sum(1 for _, _, v, _ in points if v is None)
 
     parts.append(
-    f'<text x="{pad}" y="18" font-family="Arial, sans-serif" font-size="16">'
-    f'New York State — {escape(display_param)} (latest)'
-    f"</text>"
-)
+        f'<rect x="28" y="14" width="{width - 56}" height="{header_h}" rx="16" ry="16" '
+        f'fill="#FBFCFD" stroke="#E1E6EB" stroke-width="1"/>'
+    )
     parts.append(
-    f'<text x="{pad}" y="36" font-family="Arial, sans-serif" font-size="12" fill="gray">'
-    f'{escape(report_date)} • {escape(sample_label)} • fresh: {fresh_n} • stale: {stale_n} • missing: {missing_n}'
-    f"</text>"
-)
-
+        f'<text x="46" y="40" font-family="Public Sans, Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="23" font-weight="600" fill="#1F2933">'
+        f'New York State — {escape(display_param)} (latest)'
+        f"</text>"
+    )
+    parts.append(
+        f'<text x="46" y="62" font-family="Public Sans, Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#607080">'
+        f'{escape(report_date)} • {escape(sample_label)} • fresh: {fresh_n} • stale: {stale_n} • missing: {missing_n}'
+        f"</text>"
+    )
     for poly in ny_multipolygon:
         outer = poly[0]
         d = []
@@ -908,30 +949,32 @@ def _svg_map(
             x, y = project(float(lon), float(lat))
             d.append(("M" if i == 0 else "L") + f"{x:.2f},{y:.2f}")
         d.append("Z")
-        parts.append(f'<path d="{" ".join(d)}" fill="none" stroke="black" stroke-width="1"/>')
+        parts.append(
+            f'<path d="{" ".join(d)}" fill="#EEF2EA" stroke="#1F2933" stroke-width="1.25" stroke-linejoin="round"/>'
+        )
 
     for lon, lat, v, stale in points:
         x, y = project(lon, lat)
         fill = color_for(v, stale)
         r = radius_for(v, stale)
         parts.append(
-            f'<circle cx="{x:.2f}" cy="{y:.2f}" r="{r:.2f}" fill="{fill}" stroke="black" stroke-width="0.6"/>'
+            f'<circle cx="{x:.2f}" cy="{y:.2f}" r="{r:.2f}" fill="{fill}" stroke="#24313A" stroke-width="0.75"/>'
         )
 
     # Legend box (bottom-left, above the footer line)
-    legend_w = 330 if use_aqi else 260
-    legend_h = 118 if use_aqi else 54
+    legend_w = 352 if use_aqi else 280
+    legend_h = 124 if use_aqi else 60
     legend_x = pad
-    legend_y = height - 18 - legend_h - 10  # 10px above footer
+    legend_y = height - footer_h - legend_h + 18
 
     parts.append(
-        f'<rect x="{legend_x}" y="{legend_y}" width="{legend_w}" height="{legend_h}" '
-        f'fill="white" stroke="black" stroke-width="0.6"/>'
+        f'<rect x="{legend_x}" y="{legend_y}" width="{legend_w}" height="{legend_h}" rx="14" ry="14" '
+        f'fill="#FBFCFD" stroke="#D8E0E7" stroke-width="1"/>'
     )
 
     if use_aqi:
         parts.append(
-            f'<text x="{legend_x + 10}" y="{legend_y + 18}" font-family="Arial, sans-serif" font-size="12">'
+            f'<text x="{legend_x + 12}" y="{legend_y + 20}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="12.5" fill="#1F2933">'
             f'PM2.5 AQI categories'
             f"</text>"
         )
@@ -946,32 +989,35 @@ def _svg_map(
             ("Hazardous (301–500)", "#7E0023", "250.5+"),
         ]
 
-        y = legend_y + 30
+        y = legend_y + 34
         for label, col, rng in cats:
-            parts.append(f'<rect x="{legend_x + 10}" y="{y - 10}" width="12" height="12" fill="{col}" stroke="black" stroke-width="0.4"/>')
             parts.append(
-                f'<text x="{legend_x + 28}" y="{y}" font-family="Arial, sans-serif" font-size="11">'
+                f'<rect x="{legend_x + 12}" y="{y - 10}" width="12" height="12" rx="2" ry="2" fill="{col}" '
+                f'stroke="#24313A" stroke-width="0.45"/>'
+            )
+            parts.append(
+                f'<text x="{legend_x + 30}" y="{y}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="11" fill="#1F2933">'
                 f'{escape(label)}  (µg/m³: {escape(rng)})'
                 f"</text>"
             )
             y += 14
 
         parts.append(
-            f'<text x="{pad}" y="{height - 18}" font-family="Arial, sans-serif" font-size="12" fill="gray">'
+            f'<text x="28" y="{height - 22}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="12" fill="#607080">'
             f"Stale points shown in gray"
             f"</text>"
         )
     else:
         parts.append(
-            f'<text x="{legend_x + 10}" y="{legend_y + 18}" font-family="Arial, sans-serif" font-size="12">'
+            f'<text x="{legend_x + 12}" y="{legend_y + 20}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="12.5" fill="#1F2933">'
             f'{escape(pretty_parameter_name(primary_param))} scale ({escape(units)})'
             f"</text>"
         )
 
         # Color ramp (left->right)
-        ramp_x0 = legend_x + 10
-        ramp_y0 = legend_y + 26
-        ramp_w = legend_w - 20
+        ramp_x0 = legend_x + 12
+        ramp_y0 = legend_y + 30
+        ramp_w = legend_w - 24
         ramp_h = 10
         steps = 24
         step_w = ramp_w / steps
@@ -985,16 +1031,16 @@ def _svg_map(
             )
 
         parts.append(
-            f'<text x="{ramp_x0:.2f}" y="{legend_y + 50}" font-family="Arial, sans-serif" font-size="11" fill="gray">'
+            f'<text x="{ramp_x0:.2f}" y="{legend_y + 54}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="11" fill="#607080">'
             f"{vmin:.2f}</text>"
         )
         parts.append(
-            f'<text x="{(ramp_x0 + ramp_w):.2f}" y="{legend_y + 50}" font-family="Arial, sans-serif" font-size="11" fill="gray" '
+            f'<text x="{(ramp_x0 + ramp_w):.2f}" y="{legend_y + 54}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="11" fill="#607080" '
             f'text-anchor="end">{vmax:.2f}</text>'
         )
 
         parts.append(
-            f'<text x="{pad}" y="{height - 18}" font-family="Arial, sans-serif" font-size="12" fill="gray">'
+            f'<text x="28" y="{height - 22}" font-family="Inter, Aptos, Segoe UI, Arial, sans-serif" font-size="12" fill="#607080">'
             f"Scale uses p5–p95; stale points shown in gray"
             f"</text>"
         )
@@ -1039,16 +1085,17 @@ def write_outputs(
     latest_elapsed_s: float,
     rows: list[dict],
     top_params: list[tuple[str, int]],
+    latest_errors: list[tuple[int, str]] | None = None,
 ) -> dict[str, Path]:
     """
     Write daily artifacts (idempotent per report date).
     """
     report_date = cfg.run_date.isoformat()
     sample_label = (
-    "All NY locations (with coordinates)"
-    if len(sampled_locations) == len(ny_locations)
-    else f"Stable sample ({len(sampled_locations)} of {len(ny_locations)} NY locations)"
-)
+        "All NY locations (with coordinates)"
+        if len(sampled_locations) == len(ny_locations)
+        else f"Stable sample ({len(sampled_locations)} of {len(ny_locations)} NY locations)"
+    )
     data_dir = cfg.repo_root / "data"
     notes_dir = cfg.repo_root / "notes"
     reports_dir = cfg.repo_root / "reports" / report_date
@@ -1086,15 +1133,12 @@ def write_outputs(
         "stale_fraction": f"{stale_fraction:.4f}",
         "locations_latency_ms": str(locations_latency_ms),
         "latest_elapsed_s": f"{latest_elapsed_s:.2f}",
+        "latest_error_count": str(len(latest_errors or [])),
         "top_parameters": ";".join([f"{p}:{c}" for p, c in top_params]),
         "primary_parameter": primary_param,
         "primary_units": unit,
     }
     _upsert_daily_csv(csv_path, report_date=report_date, row=csv_row)
-
-    def _rel_md_link(target: Path, note_path: Path) -> str:
-        rel = os.path.relpath(target, start=note_path.parent).replace(os.sep, "/")
-        return rel
 
     # Note (overwrite per day)
     note_path = notes_dir / f"{report_date}.md"
@@ -1108,10 +1152,17 @@ def write_outputs(
     lines.append(f"- Measurements normalized: {len(rows)}")
     lines.append(f"- Locations catalog latency: {locations_latency_ms} ms")
     lines.append(f"- Latest fetch duration: {latest_elapsed_s:.2f} s")
+    if latest_errors:
+        lines.append(f"- Latest fetch errors: {len(latest_errors)}")
     lines.append("")
     lines.append("### Data quality checks")
     lines.append(f"- Stale threshold: {cfg.stale_hours} hours")
     lines.append(f"- Stale fraction: {stale_fraction:.3f}")
+    if latest_errors:
+        lines.append("")
+        lines.append("### Fetch warnings")
+        for loc_id, msg in latest_errors[:5]:
+            lines.append(f"- Location {loc_id}: {msg}")
     lines.append("")
     lines.append("### Parameter coverage (top)")
     for p, c in top_params:
@@ -1156,14 +1207,14 @@ def write_outputs(
         title_suffix="Pollutant coverage",
     )
     map_path = _svg_map(
-    reports_dir,
-    report_date=report_date,
-    sample_label=sample_label,
-    ny_multipolygon=load_ny_multipolygon(cfg),
-    ny_locations=ny_locations,
-    rows=rows,
-    primary_param=map_param,
-    units=unit,
+        reports_dir,
+        report_date=report_date,
+        sample_label=sample_label,
+        ny_multipolygon=load_ny_multipolygon(cfg),
+        ny_locations=ny_locations,
+        rows=rows,
+        primary_param=map_param,
+        units=unit,
     )
 
     return {
@@ -1186,7 +1237,11 @@ def run_daily(*, run_date: date | None = None, tz_name: str = "America/New_York"
 
     latest_ok, latest_errors, latest_elapsed_s = fetch_latest_for_locations(cfg, location_ids)
     if latest_errors:
-        raise RuntimeError(f"Latest fetch errors: {latest_errors[:1]}")
+        print("latest_fetch_errors:", len(latest_errors))
+        for loc_id, msg in latest_errors[:5]:
+            print(f"latest_fetch_error_{loc_id}:", msg)
+    if not latest_ok:
+        raise RuntimeError("No latest payloads returned; cannot build report")
 
     rows = normalize_latest(cfg, latest_ok)
     added, sensor_elapsed_s = enrich_rows_with_sensor_meta(cfg, rows=rows, location_ids=location_ids)
@@ -1249,6 +1304,7 @@ def run_daily(*, run_date: date | None = None, tz_name: str = "America/New_York"
         latest_elapsed_s=latest_elapsed_s,
         rows=rows,
         top_params=top_params,
+        latest_errors=latest_errors,
     )
     print("wrote_daily_csv:", outputs["daily_csv"])
     print("wrote_note:", outputs["note"])
