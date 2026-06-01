@@ -1,5 +1,5 @@
 {
-  "saved_at_utc": "2026-05-22T13:29:30.031525Z",
+  "saved_at_utc": "2026-06-01T16:36:05.580341Z",
   "sensor_meta": {
     "10454036": {
       "parameter_name": "temperature",
@@ -758,6 +758,46 @@
       "units": "c"
     },
     "16360770": {
+      "parameter_name": "um003",
+      "units": "particles/cm\u00b3"
+    },
+    "16465636": {
+      "parameter_name": "pm1",
+      "units": "\u00b5g/m\u00b3"
+    },
+    "16465637": {
+      "parameter_name": "pm25",
+      "units": "\u00b5g/m\u00b3"
+    },
+    "16465638": {
+      "parameter_name": "relativehumidity",
+      "units": "%"
+    },
+    "16465639": {
+      "parameter_name": "temperature",
+      "units": "c"
+    },
+    "16465640": {
+      "parameter_name": "um003",
+      "units": "particles/cm\u00b3"
+    },
+    "16467170": {
+      "parameter_name": "pm1",
+      "units": "\u00b5g/m\u00b3"
+    },
+    "16467171": {
+      "parameter_name": "pm25",
+      "units": "\u00b5g/m\u00b3"
+    },
+    "16467172": {
+      "parameter_name": "relativehumidity",
+      "units": "%"
+    },
+    "16467173": {
+      "parameter_name": "temperature",
+      "units": "c"
+    },
+    "16467174": {
       "parameter_name": "um003",
       "units": "particles/cm\u00b3"
     },
