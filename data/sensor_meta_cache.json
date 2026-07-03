@@ -1,5 +1,5 @@
 {
-  "saved_at_utc": "2026-06-16T15:52:03.896524Z",
+  "saved_at_utc": "2026-07-03T12:55:01.916413Z",
   "sensor_meta": {
     "10454036": {
       "parameter_name": "temperature",
@@ -862,6 +862,26 @@
       "units": "c"
     },
     "16630767": {
+      "parameter_name": "um003",
+      "units": "particles/cm\u00b3"
+    },
+    "16810756": {
+      "parameter_name": "pm1",
+      "units": "\u00b5g/m\u00b3"
+    },
+    "16810757": {
+      "parameter_name": "pm25",
+      "units": "\u00b5g/m\u00b3"
+    },
+    "16810758": {
+      "parameter_name": "relativehumidity",
+      "units": "%"
+    },
+    "16810759": {
+      "parameter_name": "temperature",
+      "units": "c"
+    },
+    "16810760": {
       "parameter_name": "um003",
       "units": "particles/cm\u00b3"
     },
